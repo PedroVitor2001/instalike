@@ -1,17 +1,33 @@
 import fs from "fs";
-import { createPost, getPosts } from "../models/posts-model.js";
+import { createPost, getPosts, updatePost } from "../models/posts-model.js";
 
 //GET
 export async function postsList(req, res) {
   const posts = await getPosts();
   res.status(200).json(posts);
 }
-
 //POST
 export async function createNewPost(req, res) {
   const newPost = req.body;
   try {
     const createdPost = await createPost(newPost);
+    res.status(200).json(createdPost);
+  } catch (err) {
+    console.error("Error when creating post", err.message);
+    res.status(500).json({ "erro?": "Requisition failed" });
+  }
+}
+//PUT
+export async function updateNewPost(req, res) {
+  const id = req.params.id;
+  const urlImg = `http://localhost:3000/${id}.png`;
+  const post = {
+    imgUrl: urlImg,
+    description: req.body.description,
+    alt: req.body.alt,
+  };
+  try {
+    const createdPost = await updatePost(id, post);
     res.status(200).json(createdPost);
   } catch (err) {
     console.error("Error when creating post", err.message);
